@@ -1,0 +1,41 @@
+div.container.overflow-auto
+    {
+        height: 600px; 
+        border-style: solid;
+        border-color: black;
+    }
+div.message_sender
+    {
+        padding: 10px 10px 10px 10px;
+        max-width: 500px;
+    }
+div.message_receiver
+    {
+        text-align: right;
+        margin-left: auto;
+        margin-right: 0;
+        padding: 10px 10px 10px 10px;
+        max-width: 600px;
+    }
+.chat-message-input
+    {
+        flex: 1;
+        width: 100%;
+    }
+table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+tr:first-of-type {
+        border-bottom: 2px solid black;
+      }
+tr  {
+        border-bottom: 1px solid black;
+        max-width: 100px;
+      }
+td
+    {
+        padding: 10px 10px 10px 10px;
+        /* max-width: 100px; */
+    }

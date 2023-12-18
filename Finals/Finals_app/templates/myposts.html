@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your posts</title>
+        <!--bootstrap css link-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+        <!-- font awesome link-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" 
+        integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- custom css file link  -->
+        {% load static %}
+        <link rel="icon" type="image/png" href="{% static 'images/favicon-32x32.png' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+
+    <body>
+        <!-- nav bar -->
+        <div class = "container-nav">
+            <nav class="navbar navbar-expand-lg bg-light">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/"><i class="fa-solid"></i>SUS</a> 
+                    <!-- extend button -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/">Home</a>
+                            </li>
+                            {% if 'member_id' in request.session %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'myposts' username=request.session.member_name %}">MyPosts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/chat/">Chat Rooms</a>
+                            </li>
+                            {% endif %}
+                            {% if messages %}
+                            <li class="nav-item">
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                    <li{% if message.tags %} class="{{ message.tags }} list-unstyled"{% endif %}>
+                                        {{ message }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endif %} 
+                        </ul>
+                        <ul class="nav navbar-nav ms-auto w-100 justify-content-end">
+                            {% if 'member_id' in request.session %}
+                                <li class="nav-item">
+                                    Welcome!
+                                    <a href="{% url 'profile' username=request.session.member_name %}">
+                                        <img class="rounded-circle account-img" src="{{ request.session.member_img }}" alt="op_profile" width="50" height="50">
+                                        {{ request.session.member_name }} 
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'post' username=request.session.member_name %}"> + </a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user"></i>   
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% if 'member_id' in request.session %}
+                                        <li><a class="dropdown-item" href="/logout/">logout</a></li>
+                                    {% else %}
+                                        <li><a class="dropdown-item" href="/login/">Login</a></li>
+                                        <li><a class="dropdown-item" href="/register/">Register</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li> 
+                            <form action="/search/" method = "get">
+                                <li class="nav-item">
+                                    {% if 'member_id' in request.session %}
+                                        <input type=hidden name="current_user" value="{{ request.session.member_name }}">
+                                    {% endif %}
+                                    <input type="text" name="searching" placeholder="Search for users">
+                                    <button type="submit" onclick="return confirm('Are you sure?')">Submit</button>
+                                </li>
+                            </form>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- end of nav bar -->  
+
+        <!-- feed page -->
+        <div class="container py-5">
+            <h1>My posts</h1>
+            {% if check_postdata > 0 %}
+                {% for x in page_posts %}
+                    <table border="1">
+                        <tr>
+                            <td style="width: 100%;">
+                                <a href="{% url 'profile' username=x.poster_id.username %}">
+                                    <img class="rounded-circle account-img" src="{{ MEDIA_URL }}{{ x.poster_id.profile_img }}" alt="op_profile" width="50" height="50">
+                                    {{ x.poster_id.username }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 100%; font-size: 25px;"><b>{{ x.title }}</b></td>
+                        </tr>
+                        <tr>
+                            {% if x.description == '' %} <!-- if empty, no display shown -->
+                            {% else %}
+                            <td style="width: 100%;">{{ x.description }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            {% if x.post_img %}
+                                <td style="width: 100%;"><img class="account-img" src="{{ MEDIA_URL }}{{ x.post_img }}" alt="post_image" width="50%" height="50%"></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td style="width: 100%;">
+                                Likes: 
+                                {% if x.id in check_like %}
+                                    {% for l in likes %}
+                                        {% if x.id == l.post_id %}
+                                            {{ l.totallikes }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    0
+                                {% endif %}
+                                <br>
+                                {% if 'member_id' in request.session %}
+                                    {% if x.id in check_liked %} <!-- check if already liked -->
+                                        <form action="/dislike/" method="post"> 
+                                            {% csrf_token %}
+                                            <input type=hidden name="postID" value="{{ x.id }}">
+                                            <input type=hidden name="userID" value="{{ request.session.member_id }}">
+                                            <input type="image" src="{% static 'images/liked_png.png' %}" width="20" alt="dislikes_icon">
+                                        </form>
+                                    {% else %}
+                                        <form action="/like/" method="post">
+                                            {% csrf_token %}
+                                            <input type=hidden name="postID" value="{{ x.id }}">
+                                            <input type=hidden name="userID" value="{{ request.session.member_id }}">
+                                            <input type="image" src="{% static 'images/likes_png.png' %}" width="20" alt="likes_icon">
+                                        </form>
+                                    {% endif %}
+                                        <br>
+                                        <form action="{% url 'edit_post' username=request.session.member_id %}" method="post">
+                                            {% csrf_token %}
+                                            <input type=hidden name="postID" value="{{ x.id }}">
+                                            <button type="submit">Edit Post</button>
+                                        </form>
+                                        <br>
+                                        <form action="{% url 'del_post' username=request.session.member_id %}" method="post">
+                                            {% csrf_token %}
+                                            <input type=hidden name="userID" value="{{ request.session.member_id }}">
+                                            <input type=hidden name="postID" value="{{ x.id }}">
+                                            <button type="submit">Delete Post</button>
+                                        </form>
+                                {% endif %}
+                                Posted at: {{ x.created_at }}
+                            </td>
+                            <td style="width: 100%;">
+                                <a href="{% url 'comment' id=x.id %}">
+                                    <img src="{% static 'images/comment_png.png' %}" width="20" alt="comment_icon">
+                                    {% if x.id in check_comment %}
+                                        {% for c in comments %}
+                                            {% if x.id == c.post_id %}
+                                                {{ c.totalcomments }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        0
+                                    {% endif %} 
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <P></p>
+                {% endfor %}
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if page_posts.has_previous %}
+                            <a href="?page=1">&laquo; first</a>
+                            <a href="?page={{ page_posts.previous_page_number }}">back</a>
+                        {% endif %}
+                
+                        <span class="current">
+                            Page {{ page_posts.number }} of {{ page_posts.paginator.num_pages }}
+                        </span>
+                
+                        {% if page_posts.has_next %}
+                            <a href="?page={{ page_posts.next_page_number }}">next</a>
+                            <a href="?page={{ page_posts.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            {% else %}
+            <h2>You have no posts</h2>
+            <h3>
+                <a class="nav-link" href="{% url 'post' username=request.session.member_name %}"> start posting now! </a>
+            </h3>
+            {% endif %}
+        </div>
+        <!-- Footer -->
+        <footer class="text-center text-lg-start bg-white text-muted">
+            <!-- Copyright -->
+            <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.025);">
+            © 2023 Copyright:
+            <a class="text-reset fw-bold" href="/">SUS.org</a>
+            </div>
+            <!-- Copyright -->
+        </footer>
+        <!-- Footer -->
+        <!-- bootstrap js link-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    </body>
+</html>
