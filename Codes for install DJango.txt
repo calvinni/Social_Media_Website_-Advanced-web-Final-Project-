@@ -1,0 +1,62 @@
+IMPORTANT: go to edit "activate" on the project you are on and change to the apporiate drive name (Example: "E:" changed to "G:")
+
+cd/ (go to root dir)
+
+cd/python/(filename)
+
+py --version (Check py version)
+
+py -m venv *enviromentname* (create new python enviroment)
+
+*enviromentname*\Scripts\activate (activate virtual enviroment)
+myvenv_portable\Scripts\activate
+myvenv\Scripts\activate
+packages\Scripts\activate
+
+(start regis server):
+E:\schoolwork\unistuff-sim\Year3-sem1\CM3035-Advance_Web_Development\backups\CM3035_finals\Redis\redis-server
+
+packages\Scripts\deactivate (Deactivate the virtual enviroment)
+
+py -m pip install Django==3.0.3 (install DJango onto that enviroment)
+
+django-admin startproject *Projectname* (While in virtual env, create a new django project *Lproj*)
+
+cd *Projectname* (change dir to the project)
+
+py manage.py runserver (to run the server after changing dir to *projectname*)
+control c in terminal to quit the server
+
+py manage.py startapp *Projectapp* (Adds app folder to a project *Lapp*) 
+
+If django is not reconized, change the command palette in view to python:change interpreter,
+enter interpreter path -> CC:\Users\CuteLittleGrill\djangoVenv\myvenv\Scripts\python.exe
+or
+E:\python\djangoVenv\myvenv\Scripts\python.exe
+
+Update Database:
+py manage.py makemigrations
+py manage.py migrate
+py manage.py runserver
+
+refresh css: ctrl+F5
+
+Running the script:
+py manage.py runscript loaddata
+
+laptop postgres server password: 9742556693
+
+Home pc django path: C:\Users\CuteLittleGrill\djangoVenv
+
+python super user
+Username: calvin
+Email:calvinyeo130@gmail.com
+password: steve130
+
+NOTE: If python3 code not working, use py instead
+
+Testing:
+py manage.py test *testname*
+
+Bulk install:
+pip install -r /path/to/requirements.txt
